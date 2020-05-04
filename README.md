@@ -1,6 +1,8 @@
-# OCP Flows
+# NetFlows/SFlows visualization on OpenShift
 ```
-NOTE: This is an experimental procedure for visualizing NetFlow/SFlow on OpenShift using OVN Kubernetes native capabilities and ElastiFlow
+NOTE: This is an experimental upstream procedure for visualizing
+NetFlow/SFlow on OpenShift 4.4.x using OVN Kubernetes native
+capabilities and ElastiFlow.
 ```
 
 ## Deployment of ElastiFlow on OCP
@@ -111,6 +113,23 @@ ovs-vsctl list sflow
 # To stop capture
 ovs-vsctl remove bridge ${OVS_BRIDGE} sflow <sFlow UUID>
 ```
+## Screenshots
+
+Screenshot of running this deployment on OpenSHift 4.4.3 with single worker as exporter.
+
+![Overview](screens/1-overview.png)
+
+![Top-N](screens/2-top-n.png)
+
+![Flows](screens/3-flows.png)
+
+![Geo IP](screens/4-geo-ip.png)
+
+![Exporters](screens/5-exporters.png)
+
+![Traffic Details](screens/6-traffic-details.png)
+
+![Flow Records](screens/7-flow-records.png)
 
 ## References
 
