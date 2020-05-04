@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastiflow-logstash
+spec:
+  # replicas: 1
+  selector:
+    matchLabels:
+      app: elastiflow-logstash
+  template:
+    metadata:
+      labels:
+        app: elastiflow-logstash
+      name: elastiflow-logstash
+    spec:
+      containers:
+      - name: elastiflow-logstash
+        image: robcowart/elastiflow-logstash-oss:3.5.3
+        ports:
+        - name: ipfix
+          containerPort: 4739
+          protocol: UDP
+        - name: netflow
+          containerPort: 2055
+          protocol: UDP
+        - name: sflow
+          containerPort: 6343
+          protocol: UDP
+        - name: logstash-api
+          containerPort: 9600
+        # https://github.com/robcowart/elastiflow/blob/master/INSTALL.md#6-configure-inputs
+        env:
+        - name: ELASTIFLOW_DEFAULT_APPID_SRCTYPE
+          value: __UNKNOWN
+        - name: ELASTIFLOW_IPFIX_TCP_IPV4_PORT
+          value: "4739"
+        - name: ELASTIFLOW_NAMESERVER
+          value: 127.0.0.1
+        - name: ELASTIFLOW_NETFLOW_IPV4_PORT
+          value: "2055"
+        - name: ELASTIFLOW_RESOLVE_IP2HOST
+          value: "false"
+        - name: ELASTIFLOW_SFLOW_IPV4_PORT
+          value: "6343"
+        - name: LS_JAVA_OPTS
+          value: -Xms4g -Xmx4g
+        - name: ELASTIFLOW_ES_HOST
+          value: elastiflow-es:9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elastiflow-logstash
+  name: elastiflow-logstash
+  namespace: netflow
+spec:
+  ports:
+  - name: ipfix
+    port: 4739
+    protocol: UDP
+    targetPort: ipfix
+  - name: netflow
+    port: 2055
+    protocol: UDP
+    targetPort: netflow
+  - name: sflow
+    port: 6343
+    protocol: UDP
+    targetPort: sflow
+  selector:
+    app: elastiflow-logstash
+  sessionAffinity: None
+  type: ClusterIP

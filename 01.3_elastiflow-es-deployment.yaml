@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastiflow-es
+spec:
+  # replicas: 1
+  selector:
+    matchLabels:
+      app: elastiflow-es
+  template:
+    metadata:
+      name: elastiflow-es
+      labels:
+        app: elastiflow-es
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.5.0
+        # resources:
+        #   limits:
+        #     memory: "128Mi"
+        #     cpu: "500m"
+        ports:
+        - name: es-http
+          containerPort: 9200
+        env:
+        - name: ES_JAVA_OPTS
+          value: -Xms2g -Xmx2g
+        - name: action.destructive_requires_name
+          value: "true"
+        - name: bootstrap.memory_lock
+          value: "true"
+        - name: cluster.name
+          value: elastiflow
+        - name: discovery.type
+          value: single-node
+        - name: http.port
+          value: "9200"
+        - name: indices.query.bool.max_clause_count
+          value: "8192"
+        - name: network.host
+          value: 0.0.0.0
+        - name: search.max_buckets
+          value: "100000"
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastiflow-es-vol
+      volumes:
+      - name: elastiflow-es-vol
+        persistentVolumeClaim:
+          claimName: elastiflow-es-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: elastiflow-es
+  name: elastiflow-es
+spec:
+  ports:
+  - port: 9200
+    protocol: TCP
+    targetPort: es-http
+  selector:
+    app: elastiflow-es
+  sessionAffinity: None
+  type: ClusterIP
