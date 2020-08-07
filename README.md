@@ -22,7 +22,7 @@ capabilities and ElastiFlow.
     ```
 - Create the deployment for ElasticSearch. (NOTE: It will take several minutes for the Pods to be ready)
     ```
-    oc create -f 01.3_elastiflow-logstash-deployment.yaml
+    oc create -f 01.3_elastiflow-es-deployment.yaml
     ```
 - Create the deployment for Kibana
     ```
